@@ -28,29 +28,33 @@ var collectionName = 'hm_client';
 var hmClient = mongoose.model('hm_client' , clientSchema ,collectionName);
 
 // Get client
-module.exports.getClient = function (callback,limit) {
-   hmClient.find(callback).sort({hcDate: -1}).limit(limit);
+module.exports.getClient = async function (callback,limit) {
+   const data = await hmClient.find().sort({hcDate: -1}).limit(limit);
+   callback(null,data)
 };
 
 // Get current client
-module.exports.getCurrentClient = function (callback) {
-   hmClient.find(callback).sort({hcDate: -1}).limit(1);
+module.exports.getCurrentClient = async function (callback) {
+   const data = await hmClient.find({}).sort({hcDate: -1}).limit(1);
+   callback(null,data)
 };
 
 
 // get one hilmacs client by id
-module.exports.getClientById = function (id , callback) {
-   hmClient.findById(id,callback);
+module.exports.getClientById = async function (id , callback) {
+   const data = await hmClient.findById(id);
+   callback(null,data)
 };
 
 
 // add hilmacs client
-module.exports.addClient = function (newClientData , callback) {
-   hmClient.create(newClientData,callback);
+module.exports.addClient = async function (newClientData , callback) {
+   const data = await hmClient.create(newClientData);
+   callback(null,data)
 };
 
 // update hilmacs client
-module.exports.updateClientGen = function (id , updateData , options, callback) {
+module.exports.updateClientGen = async function (id , updateData , options, callback) {
    var query = {_id:id}
    var update = {
      hcName: updateData.hcName,
@@ -60,20 +64,23 @@ module.exports.updateClientGen = function (id , updateData , options, callback) 
      hcHilmacsId: updateData.hcName,
      hcLogo: updateData.hcName
    }
-   hmClient.findOneAndUpdate(query, update , callback);
+   const data = await hmClient.findOneAndUpdate(query, update,{new:true});
+   callback(null,data)
 };
 
 // update hilmacs client
-module.exports.updateClientOne = function (id , updateData , field, callback) {
+module.exports.updateClientOne = async function (id , updateData , field, callback) {
    var query = {_id:id}
    var update = {
      hcName: updateData.value
    }
-   hmClient.findOneAndUpdate(query, update , callback);
+   const data = await hmClient.findOneAndUpdate(query, update ,{new:true});
+	callback(null,data)
 };
 
 // Delete Client
-module.exports.removeClient = (id, callback) => {
+module.exports.removeClient = async (id, callback) => {
 	var query = {_id: id};
-	hmClient.remove(query, callback);
+	const data = await hmClient.remove(query);
+	callback(null,data)
 }

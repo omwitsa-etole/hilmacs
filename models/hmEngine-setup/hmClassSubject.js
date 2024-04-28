@@ -15,41 +15,47 @@ var collectionName_Class = 'hm_structures_classes';
 var hmClasses = mongoose.model('hm_structures_classes' , classesSchema ,collectionName_Class);
 
 // Get get all classes offered
-module.exports.getClasses = (callback,limit) => {
-   hmClasses.find(callback).sort({hcDate: -1}).limit(limit);
+module.exports.getClasses = async (callback,limit) => {
+   const data = await hmClasses.find({}).sort({hcDate: -1}).limit(limit);
+   callback(null,data)
 };
 
 // get one class by id
-module.exports.getClassById = (id , callback) => {
-   hmClasses.findById(id,callback);
+module.exports.getClassById = async (id , callback) => {
+   const data = await hmClasses.findById(id);
+   callback(null,data)
 };
 
 
 // add class offered
-module.exports.addClass = (newClass , callback) => {
-   hmClasses.create(newClass,callback);
+module.exports.addClass = async (newClass , callback) => {
+   const data = await hmClasses.create(newClass);
+   callback(null,data)
 };
 
 // update class
-module.exports.updateClass =  (id , updateData , options, callback)  => {
+module.exports.updateClass =  async (id , updateData , options, callback)  => {
    var query = {_id:id}
    var update = {
      hcName: updateData.hcClassName,
      hcStreams:updateData.hcStreams
    }
-   hmClasses.findOneAndUpdate(query, update , callback);
+   const data = await hmClasses.findOneAndUpdate(query, update );
+   callback(null,data)
 };
 
 //count registered classes
-module.exports.countClasses = function (callback) {
+module.exports.countClasses = async function (callback) {
   var query = {};
-  hmClasses.count(query , callback);
+  const data = await hmClasses.find(query );
+  callback(null,data.length)
 };
 
 // Delete class
-module.exports.removeClassName = (id, callback) => {
+module.exports.removeClassName = async (id, callback) => {
 	var query = {_id: id};
-	hmClasses.remove(query, callback);
+	const data = await hmClasses.findOneAndDelete(query);
+	callback(null,data)
 }
 
 /*
@@ -67,41 +73,46 @@ var collectionName_Subject = 'hm_structures_subjects';
 var hmSubjects = mongoose.model('hm_structures_subjects' , subjectsSchema ,collectionName_Subject);
 
 // Get get all subjects offered
-module.exports.getSubjects =  (callback,limit)  => {
-   hmSubjects.find(callback).sort({hcDate: -1}).limit(limit);
+module.exports.getSubjects =  async (callback,limit)  => {
+   const data = await hmSubjects.find().sort({hcDate: -1}).limit(limit);
+   callback(null,data)
 };
 
 // get one subject by id
-module.exports.getSubjectById =  (id , callback)  => {
-   hmSubjects.findById(id,callback);
+module.exports.getSubjectById = async  (id , callback)  => {
+   const data = await  hmSubjects.findById(id);
+   callback(null,data)
 };
 
-
 // add subject offered
-module.exports.addSubject =  (newSubject , callback)  => {
-   hmSubjects.create(newSubject,callback);
+module.exports.addSubject = async (newSubject , callback)  => {
+   const data = await hmSubjects.create(newSubject);
+   callback(null,data)
 };
 
 // update class
-module.exports.updateSubject = (id , updateData , options, callback)  => {
+module.exports.updateSubject =async (id , updateData , options, callback)  => {
    var query = {_id:id}
    var update = {
      hcName: updateData.hcName,
      hcUnit:updateData.hcUnits
    }
-   hmSubjects.findOneAndUpdate(query, update , callback);
+   const data = await hmSubjects.findOneAndUpdate(query, update );
+   callback(null,data)
 };
 
 //count registered subjects
-module.exports.countSubjects = function (callback) {
+module.exports.countSubjects = async function (callback) {
   var query = {};
-  hmSubjects.count(query , callback);
+  const data = await hmSubjects.find(query);
+  callback(null,data.length)
 };
 
 // Delete class
-module.exports.removeSubject = (id, callback) => {
+module.exports.removeSubject = async (id, callback) => {
 	var query = {_id: id};
-	hmSubjects.remove(query, callback);
+	const data = await hmSubjects.findOneAndDelete(query);
+	callback(null,data)
 }
 
 /*
@@ -122,23 +133,26 @@ var collectionName_Dorm = 'hm_structures_dorms';
 var hmDorms = mongoose.model('hm_structures_dorms' , dormsSchema ,collectionName_Dorm);
 
 // Get get all classes offered
-module.exports.getDorms = (callback,limit) => {
-   hmDorms.find(callback).sort({hcDate: -1}).limit(limit);
+module.exports.getDorms = async (callback,limit) => {
+   const data = await hmDorms.find().sort({hcDate: -1}).limit(limit);
+   callback(null,data)
 };
 
 // get one class by id
-module.exports.getDormById = (id , callback) => {
-   hmDorms.findById(id,callback);
+module.exports.getDormById = async (id , callback) => {
+   const data = await hmDorms.findById(id);
+   callback(null,data)
 };
 
 
 // add class offered
-module.exports.addDorm = (newDorm , callback) => {
-   hmDorms.create(newDorm,callback);
+module.exports.addDorm = async (newDorm , callback) => {
+   const data = await  hmDorms.create(newDorm);
+   callback(null,data)
 };
 
 // update class
-module.exports.updateDorm =  (id , updateData , options, callback)  => {
+module.exports.updateDorm =  async (id , updateData , options, callback)  => {
    var query = {_id:id}
    var update = {
      hcDormName:updateData.hcDormName,
@@ -147,17 +161,21 @@ module.exports.updateDorm =  (id , updateData , options, callback)  => {
      hcWarden:updateData.hcDormName,
      hcBeds:updateData.hcDormName
    }
-   hmDorms.findOneAndUpdate(query, update , callback);
+   const data = await hmDorms.findOneAndUpdate(query, update );
+   callback(null,data)
 };
 
 //count registered dorms
-module.exports.countDorms = function (callback) {
+module.exports.countDorms = async function (callback) {
   var query = {};
-  hmDorms.count(query , callback);
+  const data = await hmDorms.find(query);
+  callback(null,data.length)
 };
 
 // Delete class
-module.exports.removeDorm = (id, callback) => {
+module.exports.removeDorm = async (id, callback) => {
 	var query = {_id: id};
-	hmDorms.remove(query, callback);
+	const data = await hmDorms.findOneAndDelete(query);
+	callback(null,data)
+	
 }

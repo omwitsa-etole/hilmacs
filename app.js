@@ -1,8 +1,8 @@
-var express = require('express');
+const express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var exphbs = require('express-handlebars');
+const exphbs = require('express-handlebars');
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var session = require('express-session');
@@ -10,8 +10,9 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
+const cors =require('cors');
 const electron = require('electron');
-mongoose.connect('mongodb://localhost/hilmacs');
+mongoose.connect('mongodb://0.0.0.0:27017/hilmacs');
 var db = mongoose.connection;
 
 // wibgates prefers mysql but let me go with NOSQL {hilmacsNosql}
@@ -51,13 +52,20 @@ var app = express();
 
 // View Engine
 app.set('views',path.join(__dirname,'views'));
-app.engine('handlebars',exphbs({defaultLayout:'layout'}));
-app.set('view engine','handlebars');
+app.engine('.handlebars', exphbs.engine({ extname: '.handlebars', defaultLayout: "main"}));
+app.set('view engine', '.handlebars');
 
 // BodyParser Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(cookieParser());
+
+const corsOptions ={
+   origin:'*', 
+   credentials:true,            //access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
+app.use(cors(corsOptions));
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname,'public')));
@@ -74,13 +82,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Express Validator
-app.use(expressValidator({
+/*app.use(expressValidator({
   errorFormatter: function(param,msg,value) {
     var namespace = param.split('.')
     , root = namespace.shift()
     , formParam = root;
 
-    while (namespace.lenght) {
+    while (namespace.length) {
       formParam += '[' + namespace.shift() + ']';
     }
     return{
@@ -90,7 +98,7 @@ app.use(expressValidator({
     }
   }
 }));
-
+*/
 // connect flash
 app.use(flash());
 

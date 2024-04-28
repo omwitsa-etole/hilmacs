@@ -21,54 +21,61 @@ var collectionName = 'hm_acc_admin';
 var User = module.exports = mongoose.model('hm_acc_admin',adminSchema,collectionName);
 
 // create new superuser
-module.exports.createUser = function(newUser, callback) {
+module.exports.createUser =  function(newUser, callback) {
    bcrypt.genSalt(10, function(err, salt) {
-     bcrypt.hash(newUser.hcPassword, salt, function(err, hash) {
+     bcrypt.hash(newUser.hcPassword, salt, async function(err, hash) {
         newUser.hcPassword = hash ;
-        newUser.save(callback);
+        const data = await newUser.save();
+		callback(null,data)
      });
    });
 }
 
 // create new adminstrator
-module.exports.newAdmin = function(admin, callback) {
+module.exports.newAdmin =  function(admin, callback) {
    bcrypt.genSalt(10, function(err, salt) {
-     bcrypt.hash(admin.hcPassword, salt, function(err, hash) {
+     bcrypt.hash(admin.hcPassword, salt,async function(err, hash) {
         admin.hcPassword = hash ;
-        User.create(admin,callback);
+		admin.hcUseRole = "administrator"
+        const data = await User.create(admin);
+		callback(null,data)
      });
    });
 }
 
 //check if role exist
-module.exports.checkRoleExits = function (role , callback) {
+module.exports.checkRoleExits = async function (role , callback) {
    var query = {hcUseRole:role} ;
-   User.find(query , callback).limit(1);
+   const data = await User.find(query).limit(1);
+   callback(null,data)
 };
 
 //count registered users
-module.exports.countAdmin = function (callback) {
+module.exports.countAdmin = async function (callback) {
   var query = {};
-  User.count(query , callback);
+  const data = await User.find(query);
+  callback(null,data.length)
 };
 
-module.exports.getAdmin = function (callback,limit) {
-   User.find(callback).limit(limit);
+module.exports.getAdmin = async function (callback,limit) {
+   const data = await User.find().limit(limit);
+   callback(null,data)
 };
 
 // get only one admin string
-module.exports.getAdminById = function (hc_amdin_id , callback) {
-   User.findById(hc_amdin_id,callback);
+module.exports.getAdminById = async function (hc_amdin_id , callback) {
+   const data = await User.findById(hc_amdin_id);
+   callback(null,data)
 };
 
 // update admin
-module.exports.updateAdminSate =  (id , update , options, callback)  => {
+module.exports.updateAdminSate =  async (id , update , options, callback)  => {
    var query = {_id:id};
-   hmTeacher.findOneAndUpdate(query, update , callback);
+   const data = await hmTeacher.findByIdAndUpdate(id, update,{new:true} );
 };
 
 // update hilmacs admin
-module.exports.updateAdmin = function (id , updateData , options, callback) {
+module.exports.updateAdmin = async function (id , updateData , options, callback) {
    var query = {_id:id}
    var update = {
      hcUsername:updateData.hcUsername,
@@ -80,24 +87,28 @@ module.exports.updateAdmin = function (id , updateData , options, callback) {
      hcUseRole:updateData.hcUseRole,
      hcImgPath:updateData.hcImgPath
    }
-   User.findOneAndUpdate(query, update , callback);
+   const data = await User.findOneAndUpdate(query, update,{new:true});
+   callback(null,data)
 };
 
 
 // get only one admin string by username
-module.exports.getAdminByUsername = function (hcUsername , callback) {
+module.exports.getAdminByUsername = async function (hcUsername , callback) {
   var query = {hcUsername:hcUsername};
-  User.findOne(query, callback);
+  const data = await User.findOne(query);
+  callback(null,data)
 };
 
 
-module.exports.getUserByUsername = function(username, callback) {
+module.exports.getUserByUsername = async function(username, callback) {
   var query = {hcUsername:username};
-  User.findOne(query, callback);
+  const data = await User.findOne(query);
+  callback(null,data)
 }
 
-module.exports.getUserById = function(id, callback) {
-  User.findById(id, callback);
+module.exports.getUserById = async function(id, callback) {
+  const data = await User.findById(id);
+  callback(null,data)
 }
 
 module.exports.comparePassword = function(candidatePassword, hash, callback) {
@@ -112,13 +123,15 @@ module.exports.dynamicPath = function(username, callback) {
   //return 'pot' ;
 }
 
-module.exports.getUserFullnames = function (username , callback) {
-  var query = {username:username};
-  User.findOne(query , callback).fullnames;
+module.exports.getUserFullnames = async function (username , callback) {
+  var query = {hcUsername:username};
+  const data = await User.findOne(query).fullnames;
+  callback(null,data)
 };
 
 // Delete Admin user
-module.exports.removeAdmin = (id, callback) => {
+module.exports.removeAdmin = async (id, callback) => {
 	var query = {_id: id};
-	User.remove(query, callback);
+	const data = await User.findByIdAndDelete(query);
+	callback(null,data)
 }

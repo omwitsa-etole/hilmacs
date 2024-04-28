@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html ng-app>
+   <head>
+    <meta name="description" content="School Management System">
+    <meta name="keywords" content="school System">
+    
+    <meta name="author:" content="Et">
+    <link rel="shortcut icon" href="/img/logo.ico">
+    <link rel="stylesheet" href="/css/hilmacs.css" type="text/css"/>
+	<link rel="stylesheet" href="/finance_files/vendor-0eade7d9490cb657347e8219d2a4e785.css" integrity="" type="text/css">
+
+    <link rel="stylesheet" href="/finance_files/webapp-8a0cee2c8c0e5ff3b773a66185e55ed3.css" integrity="" type="text/css">
+
+
+   </head>
+   <body>
+     {{#if body}}
+         {{{body}}}
+     {{ else }}
+         Page failed to load : Contact your systems techinical adminstrator
+     {{/if}}
+     <!-- hilmacs running scripts -->
+     <script src="/js/plugins/hmc.jquery.min.js" type='text/javascript'></script>
+     <script src="/js/plugins/hmc.bootstrap.js" type='text/javascript'></script>
+     <script src="/js/plugins/hmc.moment.js" type='text/javascript'></script>
+     <script src="/js/jet.pwr/hilmacs.min.js" type='text/javascript'></script>
+     <!-- models --
+     <script src="/js/models/hmModal-grading.js" type='text/javascript'></script>-->
+     <script src="/js/jet.pwr/hilmacs.locals.js" type='text/javascript'></script>
+     <script src="/js/jet.pwr/hilmacs.locals.assign.js" type='text/javascript'></script>
+     <!--script src="/js/plugins/hmc.vue.js" type='text/javascript'></script-->
+     <script src="/js/plugins/hmc.w3.js" type='text/javascript'></script>
+     <!--script src="/js/plugins/hmc.angular.min.js" type='text/javascript'></script-->
+
+     <!-- run ensentials -->
+     <script> w3.includeHTML();  </script>
+     <script src="/js/plugins/hmc.locate.js" type='text/javascript'></script>
+     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-107299357-1"></script>
+   </body>
+</html>

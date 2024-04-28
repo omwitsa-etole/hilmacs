@@ -167,7 +167,7 @@ router.get('/structures', hmService.oauth,  function(req ,res) {
 
 // structures {classes }
 router.get('/classes', hmService.oauth,  function(req ,res) {
-
+   console.log(req.body)
   // --breadcam message
   req.flash('breadcam','classes');
 

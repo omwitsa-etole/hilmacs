@@ -27,46 +27,53 @@ const collectionName_Tea = 'hm_acc_teacher';
 const hmTeacher = mongoose.model('hm_acc_teacher' , teacherSchema ,collectionName_Tea);
 
 // Get get all teachers
-module.exports.getTeacher = (callback,limit) => {
-   hmTeacher.find(callback).sort({hcDate: -1}).limit(limit);
+module.exports.getTeacher = async (callback,limit) => {
+   const data = await hmTeacher.find({}).sort({hcDate: -1}).limit(limit);
+   callback(null,data)
 };
 
 // get teacher by id
-module.exports.getTeacherById = (id , callback) => {
-   hmTeacher.findById(id,callback);
+module.exports.getTeacherById = async (id , callback) => {
+   const data = await hmTeacher.findById(id);
+   callback(null,data)
 };
 
 // get teacher by id
-module.exports.getTeacherByUname = (name , callback) => {
+module.exports.getTeacherByUname = async (name , callback) => {
   var query = {hcUsername:name}
-  hmTeacher.findOne(query,callback).sort({hcDate: -1}).limit(5);
+  const datas = await hmTeacher.findOne(query).sort({hcDate: -1}).limit(5);
+  callback(null,datas)
 };
 
 
 // add teacher
 module.exports.addTeacher = (data , callback) => {
   bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(data.hcPassword, salt, (err, hash) => {
+    bcrypt.hash(data.hcPassword, salt, async (err, hash) => {
        data.hcPassword = hash ;
-       hmTeacher.create(data,callback);
+       const datas = await hmTeacher.create(data);
+	   callback(null,datas)
     });
   });
 };
 
 // update teacher
-module.exports.updateTeacherSate =  (id , update , options, callback)  => {
+module.exports.updateTeacherSate = async (id , update , options, callback)  => {
    var query = {_id:id};
-   hmTeacher.findOneAndUpdate(query, update , callback);
+   const data = await hmTeacher.findOneAndUpdate(query, update );
+   callback(null,data)
 };
 
 //count registered teachers
-module.exports.countTeacher = function (callback) {
+module.exports.countTeacher = async function (callback) {
   var query = {};
-  hmTeacher.count(query , callback);
+  const data = await hmTeacher.find(query );
+  callback(null,data.length)
 };
 
 // Deactivate teacher
-module.exports.removeTeacher = (id, callback) => {
+module.exports.removeTeacher = async (id, callback) => {
 	var query = {_id: id};
-	hmTeacher.remove(query, callback);
+	const data = await hmTeacher.findOneAndDelete(query);
+	callback(null,data)
 }

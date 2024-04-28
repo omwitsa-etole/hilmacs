@@ -5,7 +5,9 @@ var bcrypt = require('bcryptjs');
 var examTypeSchema = mongoose.Schema({
   hcExam:{ type:String, required: true },
   hcAbbr:{ type:String, required: true },
+  hcStreams:{ type:String, required: true,default:"" },
   hcStatus:{ type:Number, default:0 },
+  hcTime:{ type:Date, equired: true,default:Date.now },
   hcDate:{ type:Date, default:Date.now }
 });
 
@@ -13,45 +15,52 @@ var collectionName = 'hm_exam_types';
 var hmExamType = mongoose.model('hm_exam_types' , examTypeSchema ,collectionName);
 
 // Get get all exams offered
-module.exports.getExamType = function (callback,limit) {
-   hmExamType.find(callback).sort({hcDate: -1}).limit(limit);
+module.exports.getExamType = async function (callback,limit) {
+   const data = await hmExamType.find({}).sort({hcDate: -1}).limit(limit);
+   callback(null,data)
 };
 
 // get one examtype by id
-module.exports.getExamTypeById = function (id , callback) {
-   hmExamType.findById(id,callback);
+module.exports.getExamTypeById = async function (id , callback) {
+   const data = await hmExamType.findById(id);
+   callback(null,data)
 };
 
 
 // add examtype offered
-module.exports.addExamType = function (newExamType , callback) {
-   hmExamType.create(newExamType,callback);
+module.exports.addExamType = async function (newExamType , callback) {
+   const data = await hmExamType.create(newExamType);
+   callback(null,data)
 };
 
 // update examtype
-module.exports.updateExamType = function (id , updateData , options, callback) {
+module.exports.updateExamType = async function (id , updateData , options, callback) {
    var query = {_id:id}
    var update = {
      hcExam: updateData.hcExam,
      hcAbbr:updateData.hcAbbr,
+	 hcTime:updateData.hcTime,
      hcStatus: updateData.hcStatus,
    }
-   hmExamType.findOneAndUpdate(query, update , callback);
+   const data = await hmExamType.findOneAndUpdate(query, update );
+   callback(null,data)
 };
 
 // update examtype status
-module.exports.updateExamTypeStatus = function (id , updateData , field, callback) {
+module.exports.updateExamTypeStatus = async  function (id , updateData , field, callback) {
    var query = {_id:id}
    var update = {
      hcStatus: updateData.value
    }
-   hmExamType.findOneAndUpdate(query, update , callback);
+   const data = await hmExamType.findOneAndUpdate(query, update );
+   callback(null,data)
 };
 
 // Delete examtype
-module.exports.removeExamType = (id, callback) => {
+module.exports.removeExamType = async (id, callback) => {
 	var query = {_id: id};
-	hmExamType.remove(query, callback);
+	const data = await hmExamType.findOneAndDelete(query);
+	callback(null,data)
 }
 
 /*
@@ -69,41 +78,47 @@ var collectionName_Term = 'hm_terms';
 var hmTerms = mongoose.model('hm_terms' , TermSchema ,collectionName_Term);
 
 // Get get all terms offered
-module.exports.getTerms = function (callback,limit) {
-   hmTerms.find(callback).sort({hcDate: -1}).limit(limit);
+module.exports.getTerms = async function (callback,limit) {
+   const data = await hmTerms.find().sort({hcDate: -1}).limit(limit);
+   callback(null,data)
 };
 
 // get one examtype by id
-module.exports.getTermById = function (id , callback) {
-   hmTerms.findById(id,callback);
+module.exports.getTermById = async function (id , callback) {
+   const data = await hmTerms.findById(id);
+   callback(null,data)
 };
 
 
 // add examtype offered
-module.exports.addTerm = function (newTerm , callback) {
-   hmTerms.create(newTerm,callback);
+module.exports.addTerm = async function (newTerm , callback) {
+   const data = await hmTerms.create(newTerm);
+   callback(null,data)
 };
 
 // update examtype
-module.exports.updateTerm = function (id , updateData , options, callback) {
+module.exports.updateTerm = async function (id , updateData , options, callback) {
    var query = {_id:id}
    var update = {
      hcTerm: updateData.hcTerm
    }
-   hmTerms.findOneAndUpdate(query, update , callback);
+   const data = await hmTerms.findOneAndUpdate(query, update );
+   callback(null,data)
 };
 
 // update examtype status
-module.exports.updateTermStatus = function (id , updateData , field, callback) {
+module.exports.updateTermStatus = async function (id , updateData , field, callback) {
    var query = {_id:id}
    var update = {
      hcStatus: updateData.value
    }
-   hmTerms.findOneAndUpdate(query, update , callback);
+   const data = await hmTerms.findOneAndUpdate(query, update );
+    callback(null,data)
 };
 
 // Delete examtype
-module.exports.removeTerm = (id, callback) => {
+module.exports.removeTerm = async  (id, callback) => {
 	var query = {_id: id};
-	hmTerms.remove(query, callback);
+	const data = await hmTerms.findOneAndDelete(query);
+	 callback(null,data)
 }

@@ -13,45 +13,52 @@ const gradeName = 'hm_grading';
 const hmGrading = mongoose.model('hm_grading' , gardingSchema ,gradeName);
 
 // Get client grading
-module.exports.getGrading = function (callback,limit) {
-   hmGrading.find(callback).limit(limit).sort({hcDate: -1});
+module.exports.getGrading = async function (callback,limit) {
+   const data = await hmGrading.find({}).limit(limit).sort({hcDate: -1});
+   callback(null,data)
 };
 
 // get one hilmacs client controls by role
-module.exports.getGradByValue = function (data , callback) {
+module.exports.getGradByValue = async function (data , callback) {
    var query = {hcGName:data.name,hcGClass:data.class,hcGDate:data.year}
-   hmGrading.find(query,callback).collation({locale:'en',strength: 2}).sort({hcGName:1});
+   const datas = await hmGrading.find(query).collation({locale:'en',strength: 2}).sort({hcGName:1});
+   callback(null,datas)
 };
 
 // get one by class & year
-module.exports.getGradeByName = function (data , callback) {
+module.exports.getGradeByName = async function (data , callback) {
    var query = {hcGClass:data.class,hcGDate:data.year}
-   hmGrading.find(query,callback).collation({locale:'en',strength: 2}).sort({hcGName:1});
+   const datas = await hmGrading.find(query).collation({locale:'en',strength: 2}).sort({hcGName:1});
+   callback(null,datas)
 };
 
 // get all by year
-module.exports.getGradeByYear = function (data , callback) {
+module.exports.getGradeByYear = async function (data , callback) {
    var query = {hcGDate:data.year}
-   hmGrading.find(query,callback).sort({hcDate: -1});
+   const datas = await hmGrading.find(query).sort({hcDate: -1});
+   callback(null,datas)
 };
 // get one grade by id
-module.exports.getGradeById = (id , callback) => {
-   hmGrading.findById(id,callback);
+module.exports.getGradeById = async (id , callback) => {
+   const data = await hmGrading.findById(id);
+   callback(null,data)
 };
 
 // add hilmacs client grades
-module.exports.newGrading = function (data , callback) {
-  hmGrading.create(data,callback);
+module.exports.newGrading = async function (data , callback) {
+  const datas = await  hmGrading.create(data);
+  callback(null,datas)
 };
 
 // update hilmacs client grading
-module.exports.updateGrade =  (id , update , callback)  => {
+module.exports.updateGrade = async (id , update , callback)  => {
    var query = {_id:id};
-   hmTeacher.findOneAndUpdate(query, update , callback);
+   const data = await hmTeacher.findOneAndUpdate(query, update);
+   callback(null,data)
 };
 
 // Delete grade
-module.exports.removeGrade = (id, callback) => {
+module.exports.removeGrade = async (id, callback) => {
 	var query = {_id: id};
 	hmGrading.remove(query, callback);
 }
@@ -71,46 +78,54 @@ const hmAvdGrading = mongoose.model('hm_grading_adv' , advGardingSchema ,advGrad
 
 
 // Get client grading
-module.exports.getAdvGrading = function (callback,limit) {
-   hmAvdGrading.find(callback).limit(limit).collation({locale:'en',strength: 2}).sort({hcGAName:1});
+module.exports.getAdvGrading = async function (callback,limit) {
+   const data = await hmAvdGrading.find({}).limit(limit).collation({locale:'en',strength: 2}).sort({hcGAName:1});
+	callback(null,data)
 };
 
 // get all
-module.exports.getAdvGradeCheck = function (data , callback) {
+module.exports.getAdvGradeCheck = async function (data , callback) {
    var query = {hcGAName:data.name,hcGAYear:data.year,hcGAClass:data.class,hcGAPaper:data.paper}
-   hmAvdGrading.findOne(query,'hcGALeast',callback).sort({hcDate: -1});
+   const datas = await hmAvdGrading.findOne(query,'hcGALeast').sort({hcDate: -1});
+   callback(null,datas)
 };
 
 // get by paper
-module.exports.getAdvGradeByName = function (data , callback) {
+module.exports.getAdvGradeByName = async function (data , callback) {
    var query = {hcGAPaper:data.paper,hcGAYear:data.year,hcGAClass:data.class}
-   hmAvdGrading.findOne(query,'hcGALeast hcGAName',callback).collation({locale:'en',strength: 2}).sort({hcGAName:1});
+   const datas = await hmAvdGrading.findOne(query,'hcGALeast hcGAName').collation({locale:'en',strength: 2}).sort({hcGAName:1});
+	callback(null,datas)
 };
 
 // get one grade by
-module.exports.getAdvGradeByYearClass = function (data , callback) {
+module.exports.getAdvGradeByYearClass = async function (data , callback) {
    var query = {hcGAYear:data.year,hcGAClass:data.class}
-   hmAvdGrading.find(query,'hcGALeast hcGAName hcGAPaper _id',callback).collation({locale:'en',strength: 2}).sort({hcGAName:1});
+   const datas = await hmAvdGrading.find(query,'hcGALeast hcGAName hcGAPaper _id').collation({locale:'en',strength: 2}).sort({hcGAName:1});
+	callback(null,datas)
 };
 
 // add hilmacs client advanced grades
-module.exports.newAdvGrading = function (data , callback) {
-   hmAvdGrading.create(data,callback);
+module.exports.newAdvGrading = async function (data , callback) {
+   const datas = await hmAvdGrading.create(data);
+   callback(null,datas)
 };
 
 // get one adv grade by id
-module.exports.getAdvGradeByById = function (id , callback) {
-   hmAvdGrading.findById(id,callback);
+module.exports.getAdvGradeByById = async function (id ) {
+   const data = await hmAvdGrading.findById(id);
+   callback(null,data)
 };
 
 //update advanced grading
-module.exports.updateAdvGrade =  (id , update , callback)  => {
+module.exports.updateAdvGrade = async  (id , update , callback)  => {
    var query = {_id:id};
-   hmTeacher.findOneAndUpdate(query, update , callback);
+   const data = await hmTeacher.findOneAndUpdate(query, update );
+   callback(null,data)
 };
 
 // Delete adv grade
-module.exports.removeAdvGrade = (id, callback) => {
+module.exports.removeAdvGrade = async (id, callback) => {
 	var query = {_id: id};
-	hmAvdGrading.remove(query, callback);
+	const data = await  hmAvdGrading.findOneAndDelete(query);
+	callback(null,data)
 }

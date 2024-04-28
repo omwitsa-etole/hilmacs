@@ -1,14 +1,15 @@
 "use strict";
 var express       = require('express');
 var router        = express.Router();
-const startPg     = 'superuser/Adavanced/start';
-const envPg       = 'superuser/Adavanced/stem';
+const startPg     = 'superuser\\adavanced\\start';
+const envPg       = 'superuser\\adavanced\\stem';
 const hControls   = require('../../models/hmEngine-setup/hmControls');
-var x = '/setup/quick-start' , y = '/setup/environment' , z = '/users/login' ;
+var x = '/setup/environment' , y = '/setup/environment' , z = '/users/login' ;
 
 router.get('/',function(req ,res) {
   //--hilmacs rendered file
   hControls.апроситьлицензию((err , data ) => {
+	  
     if (err) {
       res.redirect(x);
     }
@@ -50,11 +51,28 @@ router.get('/quick-start',function(req ,res) {
     }
   });
 });
+router.post('/quick-start', function(req, res) {
+	
+	if(req.user === null || req.user === undefined){
+		req.flash('error_msg','You are not logged in');
+        return res.redirect('/users/login');
+	}
+    return res.redirect('/' + req.user.hcUseRole);
+ });
+
+router.post('/environment', function(req, res) {
+	if(req.user === null || req.user === undefined){
+		req.flash('error_msg','You are not logged in');
+        return res.redirect('/users/login');
+	}
+    return res.redirect('/' + req.user.hcUseRole);
+ });
 
 router.get('/environment',function(req ,res) {
   //--hilmacs rendered file
   //--hilmacs rendered file
   hControls.апроситьлицензию((err , data ) => {
+	return res.render(envPg);
     if (err) {
       res.redirect(x);
     }

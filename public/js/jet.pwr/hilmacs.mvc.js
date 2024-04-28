@@ -86,6 +86,68 @@ $(document).ready( () => {
 	   hmService.hapiTerms();
 	});
 
+	
+
+	// hilmacs default comment
+	
+
+	// hilmacs display classes types
+	hmService.hapiSubjects =  () => {
+		$('#available-units').change(function(e){
+			var value = e.target.value.split("+")
+			console.log("selected",e.target.value,value);
+			var selected = $("#selected-units").val()
+			
+			var selectedids = $('#hm-inpt-modal-c2').val();
+			if(selected.includes(value[1])){
+				selected.replace(value[1]+",","")
+				selectedids.replace(value[0]+",","")
+				$('#hm-inpt-modal-c2').val(selectedids);
+				$("#selected-units").val(selected)
+			}else{
+				selected += value[1]+","
+				selectedids+= value[0]+","
+				$('#hm-inpt-modal-c2').val(selectedids);
+				$("#selected-units").val(selected)
+			}
+			e.target.value = null
+			let str = $('#hm-inpt-modal-c2').val()
+			let lastIndex = str.lastIndexOf(',');
+			if (lastIndex !== -1) {
+				let modifiedStr = str.substring(0, lastIndex) + str.substring(lastIndex + 1);
+				$('#hm-inpt-modal-c2').val(modifiedStr)
+				// console.log(modifiedStr);
+			}else{
+				$('#hm-inpt-modal-c2').val(str+",")
+			}
+		});
+		$.getJSON(hmPath.gate('subjects',null,'data/'),  (data) => {
+			if (jQuery.isEmptyObject(data)) {
+				 //console.log('yes');
+			}else{
+				$('.hm-mv-subjects').empty();
+				//$('#available-units').empty();
+				$.each(data,  (key, val) => {
+						fetched_subjects.push({id:val._id,name:val.hcName})
+					   if (val.hcStatus == 0 ) { var state = "Closed"; } else { var state = "Open"; }
+						 $('.hm-sv-subjects').append(`<option value="${val._id}" >${val.hcName}</option>`);
+						 $('#available-units').append(`<option value="${val._id}+${val.hcName}" name="${val.hcName}">${val.hcName}</option>`);
+						 $('.hm-mv-subjects').append( `<tr class="${val._id}_off"> <td class="ng-binding">${val.hcName}</td> <td class="ng-binding"><span class="btn btn-default btn-sm" onclick="hm_v_s_units('${val.hcUnit}' , '${val.hcName}' , 'usubjects');">View unit<small>(s)</small></span></td> <td class="ng-binding">${val.hcDate}</td><td class="no-print"  onclick="hmService.del(\'${val._id}\' , \'subjects\');"><a  md-ink-ripple="" class="md-btn md-raised pull-left p-h-md red ${val._id}_btn">Delete</a></td></tr>`);
+				 });
+			}
+		});
+	}
+	
+	
+  // dispaly supported terms
+	hmService.hapiSubjects();
+	
+	
+	$( ".hm-invoke-e1" ).click( () => {
+	   // hilmacs default comment
+	   hmService.hapiExams();
+	});
+	
 	// hilmacs display exams types
 	hmService.hapiExams =  () => {
 		$.getJSON(hmPath.gate('exams',null,'data/'),  (data) => {
@@ -93,31 +155,37 @@ $(document).ready( () => {
 			if (jQuery.isEmptyObject(data)) {
 				 //console.log('yes');
 			}else{
+			
  		    $('.hm-mv-exams').empty();
 				$.each(data,  (key, val) => {
+						for(var dt of fetched_subjects){
+						   if(dt.id){
+							   val.hcStreams = val.hcStreams.replace(dt.id,dt.name)
+						   }
+					    }
 					  $('.hm-sv-exams').append(`<option value="${val._id}">${val.hcAbbr}</option>`);
 					   if (val.hcStatus == 0 ) { var state = "Closed"; } else { var state = "Open"; }
-						$('.hm-mv-exams').append('<tr  class="'+val._id+'_off" ><td>'+val.hcExam+'</td> <td>'+val.hcAbbr+'</td> <td><label class="ui-switch bg-success m-t-xs m-r"> <input type="checkbox" checked="false"> <i></i></label></td><td class="no-print"  onclick="hmService.del(\''+val._id+'\' , \'exams\');"><a  md-ink-ripple="" class="md-btn md-raised pull-left p-h-md red '+val._id+'_btn">Delete</a></td></tr>');
+						$('.hm-mv-exams').append('<tr  class="'+val._id+'_off" ><td>'+val.hcExam+'</td> <td>'+val.hcAbbr+'</td> <td>'+val.hcStreams+'</td> <td><label class="ui-switch bg-success m-t-xs m-r"> <input type="checkbox" checked="false"> <i></i></label></td><td class="no-print"  onclick="hmService.del(\''+val._id+'\' , \'exams\');"><a  md-ink-ripple="" class="md-btn md-raised pull-left p-h-md red '+val._id+'_btn">Delete</a></td></tr>');
 				 });
 			}
 		});
 	}
   // dispaly supported terms
 	hmService.hapiExams();
-
-	// hilmacs default comment
-	$( ".hm-invoke-e1" ).click( () => {
-	   // hilmacs default comment
-	   hmService.hapiExams();
-	});
-
+	
+	var fetched_subjects = [];
 	// hilmacs display classes types
 	hmService.hapiClasses =  () => {
 		$.getJSON(hmPath.gate('classes',null,'data/'),  (data) => {
 			if (jQuery.isEmptyObject(data)) {
 			}else{
-				$('.hm-mv-classes').empty();
+				console.log("subjects",fetched_subjects)
 				$.each(data,  (key, val) => {
+					   for(var dt of fetched_subjects){
+						   if(dt.id){
+							   val.hcStreams = val.hcStreams.replace(dt.id,dt.name)
+						   }
+					   }
 					   if (val.hcStatus == 0 ) { var state = "Closed"; } else { var state = "Open"; }
 						 $('.hm-sv-classes').append(`<option value="${val._id}">${val.hcName}</option>`);
 						 $('.hm-mv-classes').append( `<tr class="${val._id}_off"> <td class="ng-binding">${val.hcName}</td> <td class="ng-binding no-print"><span class="btn btn-default btn-sm" onclick="hm_v_s_units('${val.hcStreams}' , '${val.hcName}' , 'uclasses');">View unit<small>(s)</small></span></td> <td class="ng-binding">${val.hcDate}</td><td class="no-print"  onclick="hmService.del(\'${val._id}\' , \'classes\');"><a  md-ink-ripple="" class="md-btn md-raised pull-left p-h-md red ${val._id}_btn">Delete</a></td></tr>`);
@@ -127,24 +195,6 @@ $(document).ready( () => {
 	}
   // dispaly supported terms
 	hmService.hapiClasses();
-
-	// hilmacs display classes types
-	hmService.hapiSubjects =  () => {
-		$.getJSON(hmPath.gate('subjects',null,'data/'),  (data) => {
-			if (jQuery.isEmptyObject(data)) {
-				 //console.log('yes');
-			}else{
-				$('.hm-mv-subjects').empty();
-				$.each(data,  (key, val) => {
-					   if (val.hcStatus == 0 ) { var state = "Closed"; } else { var state = "Open"; }
-						 $('.hm-sv-subjects').append(`<option value="${val._id}">${val.hcName}</option>`);
-						 $('.hm-mv-subjects').append( `<tr class="${val._id}_off"> <td class="ng-binding">${val.hcName}</td> <td class="ng-binding"><span class="btn btn-default btn-sm" onclick="hm_v_s_units('${val.hcUnit}' , '${val.hcName}' , 'usubjects');">View unit<small>(s)</small></span></td> <td class="ng-binding">${val.hcDate}</td><td class="no-print"  onclick="hmService.del(\'${val._id}\' , \'subjects\');"><a  md-ink-ripple="" class="md-btn md-raised pull-left p-h-md red ${val._id}_btn">Delete</a></td></tr>`);
-				 });
-			}
-		});
-	}
-  // dispaly supported terms
-	hmService.hapiSubjects();
 
 	// hilmacs display classes types
 	hmService.hapiDorms =  () => {
@@ -166,6 +216,13 @@ $(document).ready( () => {
 
 	// hilmacs default comment
 	$( ".hm-invoke-c1" ).click( () => {
+		let str = $('#hm-inpt-modal-c2').val()
+		let lastIndex = str.lastIndexOf(',');
+		if (lastIndex !== -1) {
+			let modifiedStr = str.substring(0, lastIndex) + str.substring(lastIndex + 1);
+			$('#hm-inpt-modal-c2').val(modifiedStr)
+			// console.log(modifiedStr);
+		}
 	   // hilmacs default comment
 		 $('.hm-mv-classes').empty();
 		 if ($('.hm-mv-classes').is(':empty')){
@@ -280,15 +337,17 @@ $.getScript('/js/models/hmModal-grading.js');
 
 // view stream in dialogs
 function hm_v_s_units(x,y,z) {
+	console.log(x,y,z)
   var dx ;
 	$('.hm-mv-'+z+'').empty();
 	dx = x.split(',');
-	if (dx == null || dx == '') {
+	if (dx === null || dx === '') {
 		 $('.hm-srch-str-units').hide('slow');
 		 $('.hm-mv-'+z+'').append(`<tr><td>${y}</td><td>Main</td></tr>`);
 	}else{
 		$('.hm-srch-str-units').show('slow');
 		$.each(dx,  (key, val) => {
+			if(val === ''){return true}
 			$('.hm-mv-'+z+'').append(`<tr><td>${val}</td><td><span class="btn btn-default  btn-sm"><i class="mdi-action-delete text-danger text-md "></i></span></td></tr>`);
 	 });
 	}

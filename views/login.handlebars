@@ -24,7 +24,7 @@
         </div>
        <form name="form" action="/users/login" method="POST" >
        <div class="md-form-group float-label">
-         <input type="username" class="md-input text-center" name="username" id="username"  ng-model="user.email" maxlength="12" required autofocus>
+         <input type="username" class="md-input text-center" name="username" id="username"  ng-model="user.email"  required autofocus>
          <label  class="block w-full text-center">Username</label><br/><br/>
        </div>
        <div class="md-form-group">
@@ -37,6 +37,9 @@
 
     <div class="p-v-lg text-center">
       <a href="indetify.php" class="m-b">Forgot Username ?</a>
+     </div>
+	 <div class="p-v-lg text-center">
+      <a href="/users/register" class="m-b">Register</a>
      </div>
 
    </div>

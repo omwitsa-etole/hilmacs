@@ -27,7 +27,7 @@ module.exports.getControlsByName = function (name , callback) {
 module.exports.newControl = function (newControl , callback) {
   bcrypt.genSalt(10, function(err, salt) {
     bcrypt.hash(newControl.hcname, salt, function(err, hash) {
-       newControl.hcname = hash ;
+       newControl.hcName = hash ;
        newControl.save(callback);
     });
   });

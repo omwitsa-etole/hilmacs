@@ -4,6 +4,7 @@ var bodyParser    = require('body-parser');
 
 const hmService = require('../../models/hmAuthenticate/hmOauth');
 var User        = require('../../models/user');
+const hStudent = require('../../models/hmEngine-setup/hmStudent');
 var hClient     = require('../../models/hmEngine-setup/hmClient');
 var hTeacher    = require('../../models/hmEngine-setup/hmTeacher');
 var hControls   = require('../../models/hmEngine-setup/hmControls');
@@ -190,6 +191,58 @@ router.delete('/users/data/:_id', hmService.oauth, (req ,res) => {
 });
 
 
+//Students
+// client data path
+router.get('/users/data', hmService.oauth, (req ,res) => {
+  //--hilmacs rendered file
+  hStudent.getUsers(function (err , data ) {
+    if (err) {
+      throw err ;
+    }
+    res.json(data);
+  });
+});
+
+router.get('/student/data', hmService.oauth, (req ,res) => {
+  //--hilmacs rendered file
+  hStudent.getUser(function (err , data ) {
+    if (err) {
+      throw err ;
+    }
+    res.json(data);
+  });
+});
+
+// client data path to one
+router.get('/student/data/:_id', hmService.oauth, (req ,res) => {
+  var hc_uri_id = req.params._id ;
+  //--hilmacs rendered file
+  hStudent.getUserById(hc_uri_id, function (err , data ) {
+    if (err) {
+      throw err ;
+    }
+    res.json(data);
+  });
+});
+
+// client data path to one
+router.post('/student/data/', hmService.oauth, (req ,res) => {
+   var userData = {
+     hcUsername:req.body.a,
+     hcPassword:req.body.g,
+     hcFullnames:req.body.b,
+     hcGender:req.body.c,
+     hcPhone:req.body.d,
+     hcPosition:req.body.e,
+     hcUseRole:req.body.f
+   }
+   hStudent.newUser(userData , function (err , data) {
+     if(err) { throw err } ;
+     res.json(data);
+   });
+});
+
+
 // teachers Data Path
 router.get('/teachers/data', hmService.oauth, (req ,res) => {
   hTeacher.getTeacher((err , data ) => {
@@ -357,10 +410,14 @@ router.get('/exams/data/:_id', hmService.oauth, (req ,res) => {
 router.post('/exams/data', hmService.oauth, (req ,res) => {
   var x = req.body.a ;
   var y = req.body.b ;
+  var z = req.body.c ;
+  var d= req.body.d ;
   // obj=>new hilmacs client
   var newExamType = ({
     hcExam:x,
-    hcAbbr:y
+    hcAbbr:y,
+	hcTime:d,
+	hcStreams:z
   });
   hExamTerms.addExamType(newExamType , function (err , data ) {
     if (err) {
