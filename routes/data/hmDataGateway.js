@@ -203,7 +203,7 @@ router.get('/users/data', hmService.oauth, (req ,res) => {
   });
 });
 
-router.get('/student/data', hmService.oauth, (req ,res) => {
+router.get('/students/data',  (req ,res) => {
   //--hilmacs rendered file
   hStudent.getUser(function (err , data ) {
     if (err) {
@@ -214,10 +214,54 @@ router.get('/student/data', hmService.oauth, (req ,res) => {
 });
 
 // client data path to one
-router.get('/student/data/:_id', hmService.oauth, (req ,res) => {
-  var hc_uri_id = req.params._id ;
+router.get('/student/data', async (req ,res) => {
+  try{
+    //var hc_uri_id = req.user.id ;
+    //--hilmacs rendered file
+    //console.log("id",hc_uri_id,req.user)
+    const r = {}
+    await hGrading.getGrading(function(err,gradings){
+      if(!err){
+        ///console.log("gradings=>",gradings)
+        r.gradings = gradings
+      }
+    })
+   
+    await  hStructures.getSubjects(function(err,subjects){
+      if(!err){
+        r.subjects = subjects
+      }
+      
+      hExamTerms.getExamType(function(err,exams){
+        if(!err){
+          r.exams = exams
+          
+        }
+      })
+      hStructures.getClasses(function (err , data ) {
+        if (!err) {  r.classes = data
+        }
+
+          res.json(r)
+          return
+        
+      });
+    })
+    
+    
+  }catch(e){
+    console.log(e)
+    res.status(500).send('SERVER ERROR')
+    return
+  }
+  
+  
+});
+
+router.put('/student/data', hmService.oauth, (req ,res) => {
+  var hc_uri_id = req.user._id ;
   //--hilmacs rendered file
-  hStudent.getUserById(hc_uri_id, function (err , data ) {
+  hStudent.updateUser(hc_uri_id, function (err , data ) {
     if (err) {
       throw err ;
     }
@@ -226,7 +270,7 @@ router.get('/student/data/:_id', hmService.oauth, (req ,res) => {
 });
 
 // client data path to one
-router.post('/student/data/', hmService.oauth, (req ,res) => {
+router.post('/student/data', hmService.oauth, (req ,res) => {
    var userData = {
      hcUsername:req.body.a,
      hcPassword:req.body.g,
@@ -304,7 +348,7 @@ router.post('/teachers/data', hmService.oauth, (req ,res) => {
     hcPhone:a[2],
     hcAddress:a[3],
     hcUseRole:a[5],
-    hcSubjects:c,
+    hStructures:c,
     hcClasses:b,
     hcTType:a[6]
   }
@@ -387,7 +431,7 @@ router.post('/controls/data', (req ,res) => {
    // hilmacs examtypes api
 */
 // get all exams
-router.get('/exams/data', hmService.oauth, (req ,res) => {
+router.get('/exams/data',(req ,res) => {
   hExamTerms.getExamType(function (err , data ) {
     if (err) {
       throw err ;
@@ -520,7 +564,7 @@ router.delete('/terms/data/:_id', hmService.oauth, (req ,res) => {
    // hilmacs classes api
 */
 // get all classes
-router.get('/classes/data', hmService.oauth, (req ,res) => {
+router.get('/classes/data',  (req ,res) => {
   hStructures.getClasses(function (err , data ) {
     if (err) {
       throw err ;
@@ -535,23 +579,36 @@ router.post('/classes/data/', hmService.oauth, (req ,res) => {
      hcName:req.body.a,
      hcStreams:req.body.b
    }
-   hStructures.addClass(classData , function (err , data) {
-     if (err) { res.json([]);
-     }else { res.json(data); }
-   });
+   if(classData.hcName){
+	   hStructures.addClass(classData , function (err , data) {
+      console.log("classes",data)
+      if (err) { res.json([]);
+		 }else { res.json(data); }
+	   });
+   }
+   
 });
 
 // get class details by its id
-router.get('/classes/data/:_id', hmService.oauth, (req ,res) => {
+router.get('/classes/data/:_id', (req ,res) => {
   var a = req.params._id ;
+  const result = {}
+  
+  hStructures.getSubjects(function(err,subjects){
+    if(!err){
+      result.subjects = subjects
+    }
+  })
   hStructures.getClassById(a ,function (err , data ) {
-    if (err) { res.json([]);
-    }else { res.json(data); }
+    if (!err) { result.class = data
+    }
+    res.json(result)
   });
+ 
 });
 
 // count registered classes
-router.get('/classes/count', hmService.oauth, (req ,res) => {
+router.get('/classes/count',  (req ,res) => {
   hStructures.countClasses(function (err , data ) {
     if (err) { res.json([]);
     }else { res.json(data); }
@@ -567,18 +624,24 @@ router.delete('/classes/data/:_id', hmService.oauth, (req ,res) => {
 });
 
 /*
-   // hilmacs subjects api
+   // hilmacs subjects api, hmService.oauth,
 */
 // get all subjects
-router.get('/subjects/data', hmService.oauth, (req ,res) => {
+router.get('/subjects/data',  (req ,res) => {
+   let admin;
+   hTeacher.getTeacherByUname('admin',function(err , data) {
+	 if (err) { res.json([]);return;
+	 }else { admin = data}
+   })
   hStructures.getSubjects(function (err , data ) {
-    if (err) { res.json([]);
-    }else { res.json(data); }
-  });
+	  //console.log("data",data)
+    if (err) { res.json([]);return
+    }else { res.json(data); return}
+  },15,admin);
 });
 
 // get subjects details by its id
-router.get('/subjects/data/:_id', hmService.oauth, (req ,res) => {
+router.get('/subjects/data/:_id',  (req ,res) => {
   var a = req.params._id ;
   hStructures.getSubjectById(a ,function (err , data ) {
     if (err) { res.json([]);
@@ -590,7 +653,16 @@ router.get('/subjects/data/:_id', hmService.oauth, (req ,res) => {
 router.post('/subjects/data/', hmService.oauth, (req ,res) => {
    var subjectData = {
      hcName:req.body.a,
-     hcUnit:req.body.b
+     hcUnit:req.body.b,
+	 teacher:req.body.teacher
+   }
+   if(!subjectData.teacher){
+	   let admin;
+	   hTeacher.getTeacherByUname('admin',function(err , data) {
+		 if (err) { res.json([]);return;
+		 }else { admin = data._id }
+	   })
+	   subjectData.teacher = admin
    }
    hStructures.addSubject(subjectData , function (err , data) {
      if (err) { res.json([]);
@@ -599,7 +671,7 @@ router.post('/subjects/data/', hmService.oauth, (req ,res) => {
 });
 
 // count registered subjects
-router.get('/subjects/count', hmService.oauth, (req ,res) => {
+router.get('/subjects/count',  (req ,res) => {
   hStructures.countSubjects(function (err , data ) {
     if (err) { res.json([]);
     }else { res.json(data); }

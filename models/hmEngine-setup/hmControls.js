@@ -32,6 +32,7 @@ module.exports.апроситьлицензию = async function (callback) {
    if(!data){
 	    data = {}
 		data.hcName = 'admin'
+		
 		data.hcValue = '123456789'
 		data.hcState = null
 	    bcrypt.genSalt(10, function(err, salt) {

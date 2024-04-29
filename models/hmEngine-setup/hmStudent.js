@@ -14,6 +14,8 @@ var userSchema = mongoose.Schema({
   hcImgPath:{ type:String,default:"/img/defaults/user.jpg" },
   hcStatus:{ type:String, default: "offline" },
   hcState:{ type:String, default:1},
+  courses:{ type:Array, default:[]},
+  subjects:{ type:Array, default:[]},
   hcDate:{ type:Date, default:Date.now }
 });
 
@@ -80,7 +82,9 @@ module.exports.updateUser = async function (id , updateData , options, callback)
      hcPhone:updateData.hcPhone,
      hcPosition:updateData.hcPosition,
      hcUseRole:updateData.hcUseRole,
-     hcImgPath:updateData.hcImgPath
+     hcImgPath:updateData.hcImgPath,
+	 courses:updateData.courses,
+	 subjects:updateData.subjects,
    }
    const data = await User.findOneAndUpdate(query, update,{new:true});
    callback(null,data)

@@ -6,8 +6,12 @@ var mongoose = require('mongoose');
 
 // hilmacs classSchema
 var classesSchema = mongoose.Schema({
-  hcName:{ type:String, required: true },
+  hcName:{ type:String, required: true, default:'none' },
+  desc:{ type:String,default:'Join this class to gain knowledge about each and all aspects that are available ' },
   hcStreams:{ type:String, default:'none' },
+  duration:{ type:String, default:'3 hours' },
+  level:{ type:String, default:'Beginner' },
+  teacher:{type:String,default:'admin'},
   hcDate:{ type:Date, default:Date.now }
 });
 
@@ -64,7 +68,9 @@ module.exports.removeClassName = async (id, callback) => {
 
 // hilmacs subjectsSchema
 var subjectsSchema = mongoose.Schema({
-  hcName:{ type:String, required: true },
+  hcName:{ type:String, required: true, default:'none' },
+  teacher:{type:String,default:null},
+  desc:{type:String,default:null},
   hcUnit:{ type:String, default:'none' },
   hcDate:{ type:Date, default:Date.now }
 });
@@ -73,9 +79,16 @@ var collectionName_Subject = 'hm_structures_subjects';
 var hmSubjects = mongoose.model('hm_structures_subjects' , subjectsSchema ,collectionName_Subject);
 
 // Get get all subjects offered
-module.exports.getSubjects =  async (callback,limit)  => {
+module.exports.getSubjects =  async (callback,limit,teacher)  => {
+	let datas = []
    const data = await hmSubjects.find().sort({hcDate: -1}).limit(limit);
-   callback(null,data)
+   for(var d of data){
+	   if(!d.teacher){
+		   d.teacher = teacher
+	   }
+	   datas.push(d)
+   }
+   callback(null,datas)
 };
 
 // get one subject by id
@@ -86,8 +99,11 @@ module.exports.getSubjectById = async  (id , callback)  => {
 
 // add subject offered
 module.exports.addSubject = async (newSubject , callback)  => {
-   const data = await hmSubjects.create(newSubject);
-   callback(null,data)
+	if(newSubject.hcName){
+		
+	   const data = await hmSubjects.create(newSubject);
+	   callback(null,data)
+	}
 };
 
 // update class
@@ -122,7 +138,7 @@ module.exports.removeSubject = async (id, callback) => {
 // hilmacs dormsSchema
 var dormsSchema = mongoose.Schema({
   hcDormName:{ type:String, required: true },
-  hcCaptain:{ type:String, default:'none' },
+  hcCaptain:{ type:String, default:'admin' },
   hcAsstCaptain:{ type:String, default:'none' },
   hcWarden:{ type:String, default:'none' },
   hcBeds:{ type:Number, default:0 },

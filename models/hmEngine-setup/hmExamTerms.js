@@ -16,7 +16,7 @@ var hmExamType = mongoose.model('hm_exam_types' , examTypeSchema ,collectionName
 
 // Get get all exams offered
 module.exports.getExamType = async function (callback,limit) {
-   const data = await hmExamType.find({}).sort({hcDate: -1}).limit(limit);
+   const data = await hmExamType.find().sort({hcDate: -1}).limit(limit);
    callback(null,data)
 };
 

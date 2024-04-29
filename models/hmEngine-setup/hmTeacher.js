@@ -41,7 +41,24 @@ module.exports.getTeacherById = async (id , callback) => {
 // get teacher by id
 module.exports.getTeacherByUname = async (name , callback) => {
   var query = {hcUsername:name}
-  const datas = await hmTeacher.findOne(query).sort({hcDate: -1}).limit(5);
+  const datas = await hmTeacher.findOne(query).sort({hcDate: -1}).limit(5)
+  if(!datas){
+	  if(name === 'admin'){
+		  const teacher = new hmTeacher()
+		  teacher.hcUsername = name
+		  teacher.hcUseRole = 'superuser'
+		  teacher.hcFullnames = 'Admin Teacher'
+		  teacher.hcPassword = '123456789'
+		   bcrypt.genSalt(10, (err, salt) => {
+			bcrypt.hash(teacher.hcPassword, salt, async (err, hash) => {
+			   teacher.hcPassword = hash ;
+			   const data = await teacher.save();
+			   callback(null,data)
+			});
+		  });
+		 
+	  }
+  }
   callback(null,datas)
 };
 
