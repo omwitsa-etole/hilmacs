@@ -656,11 +656,18 @@ router.delete('/questions/data/:_id', hmService.oauth, (req ,res) => {
 */
 // get all classes
 router.get('/classes/data',  (req ,res) => {
-  hStructures.getClasses(function (err , data ) {
-    if (err) {
-      throw err ;
+  let result = {};
+  hStructures.getSubjects(async function(err,subjects){
+    if(!err){
+      result.subjects = subjects
     }
-    res.json(data);
+    hStructures.getClasses(function (err , data ) {
+      if (err) {
+        throw err ;
+      }
+      result.classes = data
+      res.json(result);
+    });
   });
 });
 
@@ -668,7 +675,7 @@ router.get('/classes/data',  (req ,res) => {
 router.post('/classes/data/', hmService.oauth, (req ,res) => {
    var classData = {
      hcName:req.body.a,
-     hcStreams:req.body.b,
+     hcStreams:req.body.subjects,
 	 subjects:req.body.subjects,
    }
    if(classData.hcName){
@@ -686,11 +693,11 @@ router.get('/classes/data/:_id', (req ,res) => {
   var a = req.params._id ;
   const result = {}
   
-  hStructures.getSubjects(async function(err,subjects){
+  hStructures.getSubjects(function(err,subjects){
     if(!err){
       result.subjects = subjects
     }
-    await hStructures.getClassById(a ,function (err , data ) {
+    hStructures.getClassById(a ,function (err , data ) {
       if (!err) { result.class = data
       }
       res.json(result)
