@@ -42,6 +42,7 @@ module.exports.addExamQuestion = async function (id,newQuestion , callback) {
 	const exam = await hmExamType.find({_id:id})
    const data = await hmExamType.findByIdAndUpdate(exam._id,{$set:{questions:exam.questions.push(newQuestion)}});
    if(callback){
+	 hcTime:updateData.hcTime,
 	callback(null,data)
    }else{return data}
 };
@@ -52,7 +53,6 @@ module.exports.updateExamType = async function (id , updateData , options, callb
    var update = {
      hcExam: updateData.hcExam,
      hcAbbr:updateData.hcAbbr,
-	 hcTime:updateData.hcTime,
      hcStatus: updateData.hcStatus,
    }
    const data = await hmExamType.findOneAndUpdate(query, update );
