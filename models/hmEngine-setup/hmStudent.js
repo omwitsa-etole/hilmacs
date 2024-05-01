@@ -16,6 +16,7 @@ var userSchema = mongoose.Schema({
   hcState:{ type:String, default:1},
   courses:{ type:Array, default:[]},
   subjects:{ type:Array, default:[]},
+  score:{type:Number,default:0},
   hcDate:{ type:Date, default:Date.now }
 });
 
