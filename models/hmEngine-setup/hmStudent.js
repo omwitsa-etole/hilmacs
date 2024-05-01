@@ -90,6 +90,21 @@ module.exports.updateUser = async function (id , updateData , options, callback)
    callback(null,data)
 };
 
+module.exports.addSubject = async function(id,userid,callback){
+	var query = {_id:userid}
+	const user = await User.findOne(query)
+	user.subjects.push(id)
+	const data = await user.save()
+	callback(null,data)
+}
+
+module.exports.addClass = async function(id,userid,callback){
+	var query = {_id:userid}
+	const user = await User.findOne(query)
+	user.courses.push(id)
+	const data = await user.save()
+	callback(null,data)
+}
 
 
 module.exports.getUserByUsername = async function(username, callback) {

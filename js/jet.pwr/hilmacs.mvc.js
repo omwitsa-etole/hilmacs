@@ -1,11 +1,4 @@
-/*                                                   ###########
-////////////////////////////////////////////////////////  ||   ////////////////////////////////////////////////////////
-/////  --hilmacs.js  {jetpowered}                    ///  ||   /////  --dev for : Hilmacs System                    ///
-/////  --CopyRight : Wibgates Kenneth 2017           ///  ||   /////  --Version : Hilmacs Node.js V10               ///
-/////  --Email     : wibgates@wibgates.com           ///  ||   /////  --Site    : www.hilmacs.com                   ///
-/////  --twitter   : @wifigates                      ///  ||   /////  --Git.Rep : @wibgates                         ///
-////////////////////////////////////////////////////////  ||   ////////////////////////////////////////////////////////
-												                              ##########                                                    */
+
 "use strict";
 function hcr(name) {
 		var nameEQ = name + "=";
@@ -18,6 +11,7 @@ function hcr(name) {
 		return null;
 }
 
+hmLang.default = () =>{}
 $(document).ready( () => {
 	// show current year
 	hmService.html('.hm-sv-c-year',parseInt(hmService.mtime.now('y')));
@@ -80,6 +74,25 @@ $(document).ready( () => {
   // dispaly teachers accounts
 	hmService.hapiAccTeacher();
 
+	hmService.Students =  () => {
+		$.getJSON(hmPath.gate('students',null,'data/'),  (data) => {
+		   //$(".eml").empty() // clear all HTML in the div before we start printing chat messages
+		 if (jQuery.isEmptyObject(data)) {
+	 			 //console.log('yes');
+				 $('.hm-sv-accounts-teachers').append(`<option value="0">No accounts</option>`);
+	 		}else{
+				$('.classuser-count').text(data.length)
+	 			$.each(data,  (key, val) => {
+					   $('.hm-sv-accounts-teachers').append(`<option value="${val._id}">${val.hcFullnames}</option>`);
+	 				   if (val.hcState == 1 ) { var state = "Active" , color='primary'; } else { var state = "In Active" , color='primary'; }
+	 					 $('.hm-mv-accounts-v-port').append(`<tr class="${val._id}_off ucwords" ><td>${val.hcUsername}</td> <td>${val.hcFullnames}</td> <td class="b">Teacher</td> <td class="text-${color} state-${val._id}">${state}</td> <td>${val.hcDate}</td> <td class="no-print text-center" ><button class="btn btn-icon btn-sm btn-rounded btn-danger btn-${val._id}" onclick="hmService.chgState(\'${val._id}\' , \'teachers\' , ${val.hcState}  );"><i class="mdi-action-lock hm-acc-state-${val._id}"></i></button></td></tr>`);
+	 			 });
+	 		}
+		});
+	}
+  // dispaly teachers accounts
+	hmService.hapiStudents();
+
 	// hilmacs default comment
 	$( ".hm-invoke-t1" ).click( () => {
 	   // hilmacs default comment
@@ -93,11 +106,12 @@ $(document).ready( () => {
 			if (jQuery.isEmptyObject(data)) {
 				 //console.log('yes');
 			}else{
+				$('.total-exams').text(data.length + "Exams ")
  		    $('.hm-mv-exams').empty();
 				$.each(data,  (key, val) => {
 					  $('.hm-sv-exams').append(`<option value="${val._id}">${val.hcAbbr}</option>`);
 					   if (val.hcStatus == 0 ) { var state = "Closed"; } else { var state = "Open"; }
-						$('.hm-mv-exams').append('<tr  class="'+val._id+'_off" ><td>'+val.hcExam+'</td> <td>'+val.hcAbbr+'</td> <td><label class="ui-switch bg-success m-t-xs m-r"> <input type="checkbox" checked="false"> <i></i></label></td><td class="no-print"  onclick="hmService.del(\''+val._id+'\' , \'exams\');"><a  md-ink-ripple="" class="md-btn md-raised pull-left p-h-md red '+val._id+'_btn">Delete</a></td></tr>');
+						$('.hm-mv-exams').append('<tr  class="'+val._id+'_off" ><td><a href="/structures/exams/${val._id}">'+val.hcExam+'</a></td> <td>'+val.hcAbbr+'</td> <td><label class=""> <a href="/settings/exams/${val._id}">Detail</a></label></td><td class="no-print"  onclick="hmService.del(\''+val._id+'\' , \'exams\');"><a  md-ink-ripple="" class="md-btn md-raised pull-left p-h-md red '+val._id+'_btn">Delete</a></td></tr>');
 				 });
 			}
 		});
@@ -117,6 +131,15 @@ $(document).ready( () => {
 			if (jQuery.isEmptyObject(data)) {
 			}else{
 				$('.hm-mv-classes').empty();
+				let topClass = null
+				for(var cl of data){
+					if(topClass && cl.users.length > topClass.users.length ){
+						topClass = cl
+					}
+					if(!topClass){topClass = cl}
+				}
+				console.log("topClass=>",topClass)
+				$('.top-class').text(topClass ? topClass.hcName : "No Classes")
 				$.each(data,  (key, val) => {
 					   if (val.hcStatus == 0 ) { var state = "Closed"; } else { var state = "Open"; }
 						 $('.hm-sv-classes').append(`<option value="${val._id}">${val.hcName}</option>`);

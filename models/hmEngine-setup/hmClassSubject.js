@@ -1,8 +1,83 @@
 var mongoose = require('mongoose');
 
-/*
-   // hilmacs class Schema
-*/
+// hilmacs subjectsSchema
+var questionsSchema = mongoose.Schema({
+   name:{ type:String, required: true, default:'none' },
+   exam:{type:String,default:null},
+   subjects:{type:Array,default:[]},
+   answer:{type:String,required:true},
+   answers:{type:Array,default:[]},
+   type:{type:String},
+   question:{type:String,required:true},
+   category:{type:String},
+   value:{type:String},
+   hcDate:{ type:Date, default:Date.now }
+ });
+ 
+ var collectionName_Question = 'hm_structures_questions';
+ var hmQuestion = mongoose.model('hm_structures_questions' , questionsSchema ,collectionName_Question);
+ 
+ // Get get all subjects offered
+ module.exports.getQuestions =  async (callback,limit,teacher)  => {
+    let datas = []
+    const data = await hmQuestion.find().sort({hcDate: -1}).limit(limit);
+    for(var d of data){
+       
+       datas.push(d)
+    }
+    callback(null,datas)
+ };
+ 
+ // get one subject by id
+ module.exports.getQuestionById = async  (id , callback)  => {
+    const data = await  hmQuestion.findById(id);
+    callback(null,data)
+ };
+ 
+ // add subject offered
+ module.exports.addQuestion = async (newSubject , callback)  => {
+    if(newSubject.question){
+       
+       const data = await hmQuestion.create(newSubject);
+       callback(null,data)
+    }
+ };
+ module.exports.newSubject = async (id,newData , callback)  => {
+	var query = {_id:id}
+	if(newData._id){
+		const question = await hmQuestion.findOne(query)
+	   var update = {
+		 subjects: question.subjects.push(newData._id)
+	   }
+	   const data =  await hmQuestion.findOneAndUpdate(query, update );
+	   callback(null,data)
+	}
+};
+
+module.exports.updateAnswers =  async (id , update, options, callback)  => {
+   var query = {_id:id}
+   
+   const data = await hmQuestion.findOneAndUpdate(query, update );
+   callback(null,data)
+};
+
+module.exports.updateQuestion=  async (id , updateData , options, callback)  => {
+   var query = {_id:id}
+   var update = {
+     answer:updateData.answer,
+     question:updateData.question,
+     value:updateData.value,
+     
+   }
+   const data = await hmQuestion.findOneAndUpdate(query, update );
+   callback(null,data)
+};
+
+module.exports.removeQuestion = async (id, callback) => {
+	var query = {_id: id};
+	const data = await hmQuestion.findOneAndDelete(query);
+	callback(null,data)
+}
 
 // hilmacs classSchema
 var classesSchema = mongoose.Schema({
@@ -12,7 +87,10 @@ var classesSchema = mongoose.Schema({
   duration:{ type:String, default:'3 hours' },
   level:{ type:String, default:'Beginner' },
   teacher:{type:String,default:'admin'},
-  hcDate:{ type:Date, default:Date.now }
+  hcDate:{ type:Date, default:Date.now },
+  users:{ type:Array, default:[]},
+  instructors:{ type:Array, default:[]},
+  subjects:{type:Array, default:[]}
 });
 
 var collectionName_Class = 'hm_structures_classes';
@@ -35,6 +113,18 @@ module.exports.getClassById = async (id , callback) => {
 module.exports.addClass = async (newClass , callback) => {
    const data = await hmClasses.create(newClass);
    callback(null,data)
+};
+
+module.exports.newUser = async (id,newData , callback)  => {
+	var query = {_id:id}
+	if(newData){
+		const classs = await hmClasses.findOne(query)
+	   var update = {
+		 users: classs.users.push(newData)
+	   }
+	   const data =  await hmSubjects.findOneAndUpdate(query, update );
+	   callback(null,data)
+	}
 };
 
 // update class
@@ -72,6 +162,8 @@ var subjectsSchema = mongoose.Schema({
   teacher:{type:String,default:null},
   desc:{type:String,default:null},
   hcUnit:{ type:String, default:'none' },
+  users:{ type:Array, default:[]},
+  instructors:{ type:Array, default:[]},
   hcDate:{ type:Date, default:Date.now }
 });
 
@@ -102,6 +194,18 @@ module.exports.addSubject = async (newSubject , callback)  => {
 	if(newSubject.hcName){
 		
 	   const data = await hmSubjects.create(newSubject);
+	   callback(null,data)
+	}
+};
+
+module.exports.subjectUser = async (id,newData , callback)  => {
+	var query = {_id:id}
+	if(newData){
+		const subject = await hmSubjects.findOne(query)
+	   var update = {
+		 users: subject.users.push(newData)
+	   }
+	   const data =  await hmSubjects.findOneAndUpdate(query, update );
 	   callback(null,data)
 	}
 };

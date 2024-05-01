@@ -6,6 +6,9 @@ var examTypeSchema = mongoose.Schema({
   hcExam:{ type:String, required: true },
   hcAbbr:{ type:String, required: true },
   hcStreams:{ type:String, required: true,default:"" },
+  files:{type:Array,default:[]},
+  instructors:{type:Array,default:[]},
+  users:{type:Array,default:[]},
   hcStatus:{ type:Number, default:0 },
   hcTime:{ type:Date, equired: true,default:Date.now },
   hcDate:{ type:Date, default:Date.now }
@@ -23,6 +26,7 @@ module.exports.getExamType = async function (callback,limit) {
 // get one examtype by id
 module.exports.getExamTypeById = async function (id , callback) {
    const data = await hmExamType.findById(id);
+   if(callback === undefined){return data}
    callback(null,data)
 };
 
@@ -43,6 +47,9 @@ module.exports.updateExamType = async function (id , updateData , options, callb
      hcStatus: updateData.hcStatus,
    }
    const data = await hmExamType.findOneAndUpdate(query, update );
+   if(updateData.files && updateData.files.title){
+	   await hmExamType.findOneAndUpdate(query, {$set:{files:data.files.push(updateData.files)}} );
+   }
    callback(null,data)
 };
 

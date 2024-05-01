@@ -3,6 +3,10 @@ var express       = require('express');
 var router        = express.Router();
 const hmService   = require('../models/hmAuthenticate/hmOauth');
 const User          = require('../models/user');
+const Exam = require("../models/hmEngine-setup/hmExamTerms")
+const Subject = require("../models/hmEngine-setup/hmClassSubject")
+const Teacher = require("../models/hmEngine-setup/hmTeacher")
+const Student = require("../models/hmEngine-setup/hmStudent")
 
 router.get('/', hmService.oauth , function(req ,res) {
   res.render('superuser/client/');
@@ -23,6 +27,45 @@ router.get('/advanced', hmService.oauth,  function(req ,res) {
 router.get('/key',function(req ,res) {
   //--hilmacs rendered file
   res.render('superuser/client/');
+});
+
+router.get('/exams/:id', hmService.oauth, async function(req ,res) {
+	const examid = req.params.id
+	let exam = {}
+  let subjects = []
+  let instructors = []
+	await Exam.getExamTypeById(examid,async function(e,data){
+		exam = data
+		if(!exam){
+			req.flash('breadcam','No exams')
+			res.redirect("/settings/exams")
+		}
+    
+    for(var e of exam.hcStreams.split(",")){
+      if(e.length > 1){
+        Subject.getSubjectById(e,function(err,data){
+          subjects.push(data)
+        })
+        
+      }
+    }
+    
+    for(var i of exam.instructors){
+      if(i.length > 1){
+        Teacher.getTeacherById(i,function(err,data){
+          instructors.push(data)
+        })
+        
+      }
+    }
+	})
+ 
+	// req.flash('breadcam','msg');
+	
+	
+	// --if user is authenticated
+  console.log("exam=>",exam)
+	res.render('superuser/exams/detail',{exam:exam,subjects:subjects,instructors:instructors});
 });
 
 router.get('/exams', hmService.oauth,  function(req ,res) {

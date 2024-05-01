@@ -213,6 +213,26 @@ router.get('/students/data',  (req ,res) => {
   });
 });
 
+router.post('/student/join/:id', hmService.oauth, (req ,res) => {
+   
+   hStudent.addClass(id,req.user.id,function(err,userData){
+	   hStructures.newUser(id,req.user.id , function (err , data) {
+		 if(err) { throw err } ;
+		 res.json({...data,...{message:"Successfully added subject"}});
+	   });
+	})
+});
+
+router.post('/student/join/subject/:id', hmService.oauth, (req ,res) => {
+ 
+   hStudent.addSubject(id,req.user.id,function(err,userData){
+	   hStructures.subjectUser(id,req.user.id , function (err , data) {
+		 if(err) { throw err } ;
+		 res.json({...data,...{message:"Successfully added subject"}});
+	   });
+   })
+});
+
 // client data path to one
 router.get('/student/data', async (req ,res) => {
   try{
@@ -560,6 +580,77 @@ router.delete('/terms/data/:_id', hmService.oauth, (req ,res) => {
   });
 });
 
+router.put('/questions/data/answers', hmService.oauth, (req ,res) => {
+  var x = req.body.id ;   // id
+  var y = req.body.answers ;   // data
+  // obj=>new hilmacs client
+  var updateAnswers = ({
+    answers:y
+  });
+  hStructures.updateAnswers( x , updateAnswers , function (err , data ) {
+    if (err) {
+      throw err ;
+    }
+    res.json(data);
+  });
+});
+
+router.get('/questions/data',  (req ,res) => {
+  hStructures.getQuestions(function (err , data ) {
+    if (err) {
+      throw err ;
+    }
+    res.json(data);
+  });
+});
+
+router.get('/questions/data/:_id', hmService.oauth, (req ,res) => {
+  var a = req.params._id ;
+  hStructures.getQuestionById(a ,function (err , data ) {
+    if (err) {
+      throw err ;
+    }
+    res.json(data);
+  });
+});
+
+
+
+router.post('/questions/data', hmService.oauth, (req ,res) => {
+  const questionData = req.body
+  console.log(questionData)
+  if(questionData){
+    if(questionData.id){
+      hStructures.updateQuestion(questionData.id,questionData , function (err , data) {
+        console.log("question",data)
+        if (err) { res.status(200).send({});
+        }else { res.status(200).send(data); }
+    });
+    }else{
+      hStructures.addQuestion(questionData , function (err , data) {
+        console.log("question",data)
+        if (err) { res.status(200).send({});
+        }else { res.status(200).send(data); }
+    });
+    }
+   
+  }else{
+    res.status(400).send({message:"Missing required data"})
+  }
+  
+});
+
+router.delete('/questions/data/:_id', hmService.oauth, (req ,res) => {
+  var a = req.params._id ;
+  hStructures.removeQuestion(a ,function (err , data ) {
+    if (err) {
+      throw err ;
+    }
+    res.json(data);
+  });
+});
+
+
 /*
    // hilmacs classes api
 */
@@ -577,7 +668,8 @@ router.get('/classes/data',  (req ,res) => {
 router.post('/classes/data/', hmService.oauth, (req ,res) => {
    var classData = {
      hcName:req.body.a,
-     hcStreams:req.body.b
+     hcStreams:req.body.b,
+	 subjects:req.body.subjects,
    }
    if(classData.hcName){
 	   hStructures.addClass(classData , function (err , data) {
@@ -594,16 +686,17 @@ router.get('/classes/data/:_id', (req ,res) => {
   var a = req.params._id ;
   const result = {}
   
-  hStructures.getSubjects(function(err,subjects){
+  hStructures.getSubjects(async function(err,subjects){
     if(!err){
       result.subjects = subjects
     }
+    await hStructures.getClassById(a ,function (err , data ) {
+      if (!err) { result.class = data
+      }
+      res.json(result)
+    });
   })
-  hStructures.getClassById(a ,function (err , data ) {
-    if (!err) { result.class = data
-    }
-    res.json(result)
-  });
+  
  
 });
 

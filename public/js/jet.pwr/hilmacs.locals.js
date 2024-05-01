@@ -1,15 +1,9 @@
-/**
- * hilmacs locals
- * hmLocals.js : v.0.0.1
- * Author     : Wibgates Kenneth The Great
- * CopyRight  : Hilmacs Labs 2017
- * License    : Open Source (MIT)
- * Disclaimer : 'provided to you as it is' and only consists hilmacs wordLibrary
-*/
 
 // global var that contains all languages
 // supported by hilmacs font end interfaces
 var hmLang = new Object();
+
+//hmLang.default = (x) =>{}
 
 // locate locale path
 hmLang.path = (x) => {
