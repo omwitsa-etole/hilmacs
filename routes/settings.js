@@ -42,16 +42,31 @@ router.get('/exams/:id', hmService.oauth, async function(req ,res) {
 		}
     
     for(var e of exam.hcStreams.split(",")){
-      if(e.length > 1){
-        Subject.getSubjectById(e,function(err,data){
-          subjects.push(data)
-        })
-        
+      e = e.replace(/"/g, '');
+      if(e.length > 24){
+        var substrings = e.match(/.{1,24}/g);
+        for(var string of substrings){
+          if(string.length == 24){
+            Subject.getSubjectById(string,function(err,data){
+              subjects.push(data)
+            })
+            
+          }
+        }
+      }else{
+        if(e.length  === 24){
+          Subject.getSubjectById(e,function(err,data){
+            subjects.push(data)
+          })
+        }
       }
+      
     }
     
     for(var i of exam.instructors){
+      i = i.replace(/"/g, '');
       if(i.length > 1){
+        
         Teacher.getTeacherById(i,function(err,data){
           instructors.push(data)
         })

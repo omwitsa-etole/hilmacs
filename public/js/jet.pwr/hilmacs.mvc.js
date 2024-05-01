@@ -257,7 +257,7 @@ $(document).ready( () => {
 			}else{
 				console.log("subjects",fetched_subjects)
 				let topClass = null
-				for(var cl of data){
+				for(var cl of data.classes){
 					if(topClass && cl.users.length > topClass.users.length ){
 						topClass = cl
 					}
@@ -265,7 +265,7 @@ $(document).ready( () => {
 				}
 				console.log("topClass=>",topClass)
 				$('.top-class').text(topClass ? topClass.hcName : "No Classes")
-				$.each(data,  (key, val) => {
+				$.each(data.classes,  (key, val) => {
 					   for(var dt of fetched_subjects){
 						   if(dt.id){
 							   val.hcStreams = val.hcStreams.replace(dt.id,dt.name)

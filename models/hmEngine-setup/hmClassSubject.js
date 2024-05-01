@@ -185,7 +185,8 @@ module.exports.getSubjects =  async (callback,limit,teacher)  => {
 
 // get one subject by id
 module.exports.getSubjectById = async  (id , callback)  => {
-   const data = await  hmSubjects.findById(id);
+	id = id.replace(/"/g, '');
+   const data = await  hmSubjects.findOne({_id:id});
    callback(null,data)
 };
 
@@ -199,6 +200,7 @@ module.exports.addSubject = async (newSubject , callback)  => {
 };
 
 module.exports.subjectUser = async (id,newData , callback)  => {
+	id = id.replace(/"/g, '');
 	var query = {_id:id}
 	if(newData){
 		const subject = await hmSubjects.findOne(query)
@@ -212,6 +214,7 @@ module.exports.subjectUser = async (id,newData , callback)  => {
 
 // update class
 module.exports.updateSubject =async (id , updateData , options, callback)  => {
+	id = id.replace(/"/g, '');
    var query = {_id:id}
    var update = {
      hcName: updateData.hcName,
