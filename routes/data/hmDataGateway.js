@@ -474,7 +474,7 @@ router.get('/exams/data/:_id', hmService.oauth, (req ,res) => {
 router.post('/exams/data', hmService.oauth, (req ,res) => {
   var x = req.body.a ;
   var y = req.body.b ;
-  var z = req.body.c ;
+  var z = req.body.subjects ;
   var d= req.body.d ;
   // obj=>new hilmacs client
   var newExamType = ({
@@ -627,8 +627,10 @@ router.post('/questions/data', hmService.oauth, (req ,res) => {
         }else { res.status(200).send(data); }
     });
     }else{
-      hStructures.addQuestion(questionData , function (err , data) {
+      
+      hStructures.addQuestion(questionData ,async function (err , data) {
         console.log("question",data)
+        await hStructures.addExamQuestion(questionData.exam,data._id)
         if (err) { res.status(200).send({});
         }else { res.status(200).send(data); }
     });

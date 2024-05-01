@@ -10,6 +10,7 @@ var examTypeSchema = mongoose.Schema({
   instructors:{type:Array,default:[]},
   users:{type:Array,default:[]},
   hcStatus:{ type:Number, default:0 },
+  questions:{type:Array,default:[]},
   hcTime:{ type:Date, equired: true,default:Date.now },
   hcDate:{ type:Date, default:Date.now }
 });
@@ -35,6 +36,14 @@ module.exports.getExamTypeById = async function (id , callback) {
 module.exports.addExamType = async function (newExamType , callback) {
    const data = await hmExamType.create(newExamType);
    callback(null,data)
+};
+
+module.exports.addExamQuestion = async function (id,newQuestion , callback) {
+	const exam = await hmExamType.find({_id:id})
+   const data = await hmExamType.findByIdAndUpdate(exam._id,{$set:{questions:exam.questions.push(newQuestion)}});
+   if(callback){
+	callback(null,data)
+   }else{return data}
 };
 
 // update examtype
