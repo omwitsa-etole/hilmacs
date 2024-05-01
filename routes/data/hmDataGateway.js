@@ -630,7 +630,7 @@ router.post('/questions/data', hmService.oauth, (req ,res) => {
       
       hStructures.addQuestion(questionData ,async function (err , data) {
         console.log("question",data)
-        await hStructures.addExamQuestion(questionData.exam,data._id)
+        await hExamTerms.addExamQuestion(questionData.exam,data._id)
         if (err) { res.status(200).send({});
         }else { res.status(200).send(data); }
     });
