@@ -34,12 +34,17 @@ router.get('/exams/:id', hmService.oauth, async function(req ,res) {
 	let exam = {}
   let subjects = []
   let instructors = []
+  let questions = []
 	await Exam.getExamTypeById(examid,async function(e,data){
 		exam = data
 		if(!exam){
 			req.flash('breadcam','No exams')
 			res.redirect("/settings/exams")
 		}
+
+    Subject.getQuestions(function(err,data){
+      questions.push(question)
+    })
     
     for(var e of exam.hcStreams.split(",")){
       e = e.replace(/"/g, '');
@@ -80,7 +85,7 @@ router.get('/exams/:id', hmService.oauth, async function(req ,res) {
 	
 	// --if user is authenticated
   console.log("exam=>",exam)
-	res.render('superuser/exams/detail',{exam:exam,subjects:subjects,instructors:instructors});
+	res.render('superuser/exams/detail',{exam:exam,subjects:subjects,instructors:instructors,questions:questions});
 });
 
 router.get('/exams', hmService.oauth,  function(req ,res) {

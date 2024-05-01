@@ -699,6 +699,9 @@ router.get('/classes/data/:_id', (req ,res) => {
     if(!err){
       result.subjects = subjects
     }
+    hStructures.getQuestions(function(err,questions){
+      result.questions = questions
+    })
     hStructures.getClassById(a ,function (err , data ) {
       if (!err) { result.class = data
       }
